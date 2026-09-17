@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Calculadora simples via dmenu + bc (resultado copiado p/ clipboard).
+set -euo pipefail
+
+expr=$(rofi -dmenu -p "Calculo")
+[ -z "$expr" ] && exit 0
+
+res=$(printf '%s' "$expr" | bc -l 2>&1) || true
+
+if [ -n "$res" ]; then
+    printf '%s' "$res" | xsel --clipboard 2>/dev/null || true
+    echo "$res" | rofi -dmenu -l 1 -p "Resultado" >/dev/null 2>&1 || true
+else
+    rofi -dmenu -l 1 -p "Expressão inválida" >/dev/null 2>&1 || true
+fi

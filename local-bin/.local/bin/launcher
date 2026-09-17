@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Lançador de aplicativos (rofi drun)
+set -euo pipefail
+exec rofi -show drun

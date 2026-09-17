@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Emoji picker dmenu (código copiado para clipboard).
+set -euo pipefail
+
+EMOJI=$(cat <<'EMOJIS'
+😀  😃  😄  😁  😆  😅  🤣  😂  🙂  🙃
+😉  😊  😇  🥰  😍  🤩  😘  😗  😚  😙
+😋  🤪  😜  🤑  🤗  🤭  🤫  🤔  🤐  🤨
+😐  😑  😶  😏  😒  🙄  😬  😮  🥴  😵
+😵  😶  😤  😠  🤬  🤯  😳  🥵  🥶  🥵
+😱  😨  😰  😥  😢  😭  😓  😩  😫  🥱
+😴  🥱  😴  🤤  😪  😮‍💨  😲  🤯  🤐  😺
+😸  😹  😻  😼  😽  🙀  😿  😾  🙈  🙉
+🐵  🐶  🐱  🐭  🐹  🐰  🦊  🐻  🐼  🐨
+🐯  🦁  🐮  🐷  🐸  🐵  🐙  🐣  🐧  🕊
+🍖  🍕  🌮  🍝  🍣  🍥  🍙  🍚  🍛  🍲
+🍫  🍿  🍩  🍪  🎂  🍰  🍮  🍭  🍼  ☕
+🍷  🍹  🍺  🥂  🥃  🍾  🧃  🧉  🧊  🧋
+🍎  🍏  🍊  🍋  🍌  🍍  🥭  🍎  🍐  🍑
+🍓  🫐  🍇  🍈  🍒  🍑  🥝  🍅  🍆  🥑
+⏱  ⏰  ⏳  ⌛  🕛  🕧  🕐  🕜  🕑  🕝
+⛅  🌈  ⛈  🌤  ☁️  ❄️  ☃️  ⛄  🔥  💧
+🌊  🌙  ⭐  🌟  ✨  💫  ☀️  🌞  🌍  🌎
+🏋️  🎸  🎹  🎺  🎻  🏀  ⚽  🏈  🏆  🎯
+💡  🔧  🔩  📷  🎥  📞  📠  📺  🔊  🔔
+EMOJIS
+)
+
+chosen=$(echo "$EMOJI" | rofi -dmenu -i -l 12 -p "Emoji") || exit 0
+emoji=$(echo "$chosen" | sed 's/[[:space:]].*//')
+[ -n "$emoji" ] && printf '%s' "$emoji" | xsel --clipboard 2>/dev/null || true
+echo "$emoji" | rofi -dmenu -l 1 -p "Copiado" >/dev/null 2>&1 || true

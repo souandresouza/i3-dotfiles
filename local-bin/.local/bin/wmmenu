@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Comandos do WM — dmenu (wallpaper colors).
+set -euo pipefail
+
+mapfile -t items <<'EOF'
+󰐪  Terminal|kitty
+󰚳  Launcher de apps|launcher
+󰁃  Wallpapers|wpmenu
+󰛐  Alternar janelas|winmenu
+󰍃  Menu de energia|powermenu
+󰌾  Travar tela|lock
+󰷉  Screenshot (tela)|maim ~/Imagens/screenshot-$(date +%d%m%Y-%H%M%S).png
+󰷉  Screenshot (área)|maim -s ~/Imagens/screenshot-$(date +%Y%m%d-%H%M%S).png
+󰷉  Screenshot (janela)|maim -si "$(xdotool getactivewindow)" ~/Imagens/screenshot-win-$(date +%Y%m%d-%H%M%S).png
+󰊪  Gerenciador de arquivos|thunar
+󰇧  Monitor do sistema|kitty --class btop btop
+󰄛  Visualizador de áudio|kitty --class cava cava
+󰣨  Sysinfo|kitty --class fastfetch fastfetch
+󰅝  Recarregar i3|i3-msg reload
+󰈆  Sair do i3|i3-msg exit
+EOF
+
+list=""
+for line in "${items[@]}"; do
+    list+="${line%%|*}\n"
+done
+
+chosen="$(printf '%b' "$list" | rofi -dmenu -i -l 15 -p "WM")" || exit 0
+
+for line in "${items[@]}"; do
+    name="${line%%|*}"
+    cmd="${line#*|}"
+    if [[ "$name" == "$chosen" ]]; then
+        eval "$cmd"
+        break
+    fi
+done

@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────────
+#  theme  — trocador de tema estilo gh0stzk (ruwall)
+#
+#    theme                     reaplica o wallpaper atual
+#    theme /caminho/d.png      aplica uma imagem específica
+#    theme random              escolhe aleatório
+#    theme next | prev         navega pela pasta de wallpapers
+#    theme --boot              mesma coisa, sem notificação/restart
+#
+#  Regera: cores (ruwall) e re-aplica na barra (polybar) e dunst.
+# ─────────────────────────────────────────────────────────────
+
+set -euo pipefail
+
+WALLS_DIR="${WALLS_DIR:-$HOME/.config/wallpapers}"
+CACHE="${CACHE_WAL:-$HOME/.cache/wal}"
+WAL_BIN="$(command -v ruwall || command -v wal || echo true)"
+
+pick() {
+    local target="$1"
+    local current=""
+    [[ -f "$CACHE/wal" ]] && current="$(cat "$CACHE/wal" 2>/dev/null || true)"
+
+    case "$target" in
+        random|next|prev) ;;
+        *) [[ -n "$target" && -f "$target" ]] && { echo "$target"; return; } ;;
+    esac
+
+    mapfile -t walls < <(find "$WALLS_DIR" -maxdepth 1 -type f \( \
+        -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o \
+        -iname '*.webp' -o -iname '*.bmp' \) | sort)
+    [[ ${#walls[@]} -eq 0 ]] && { echo "$current"; return; }
+
+    local idx=-1 i
+    for i in "${!walls[@]}"; do [[ "${walls[$i]}" == "$current" ]] && idx=$i; done
+
+    case "$target" in
+        prev)  [[ $idx -ge 0 ]] && idx=$((idx - 1)) || idx=${#walls[@]} ;;
+        next)  idx=$(( (idx + 1) % ${#walls[@]} )) ;;
+        random) idx=$((RANDOM % ${#walls[@]} )) ;;
+        *)     [[ $idx -ge 0 ]] && idx=$idx || idx=0 ;;
+    esac
+
+    echo "${walls[$idx]}"
+}
+
+BOOT=false
+target="${1:-}"
+case "${1:-}" in
+    --boot) BOOT=true; target="" ;;
+    "") target="current" ;;
+esac
+
+WALL="$(pick "$target")"
+if [[ -z "$WALL" || ! -f "$WALL" ]]; then
+    echo "nenhum wallpaper válido (procurei em: $WALLS_DIR)"
+    exit 1
+fi
+
+# gera cores + templates (oca mesmo wallpaper = idempotente)
+if [[ "$WAL_BIN" != "true" ]]; then
+    if ! "$WAL_BIN" -i "$WALL" -q --saturate 0.65 2>/dev/null; then
+        "$WAL_BIN" -i "$WALL" -q 2>/dev/null || true
+    fi
+else
+    echo "ruwall não encontrado — apenas definindo wallpaper"
+    nitrogen --set-zoom-fill "$WALL" 2>/dev/null || true
+fi
+nitrogen --set-zoom-fill "$WALL" 2>/dev/null || true
+
+# recarrega as notificações
+command -v dunstctl >/dev/null 2>&1 && dunstctl reload 2>/dev/null || true
+
+# re-coloriza a barra (polybar) reiniciando-a
+if pgrep -x polybar >/dev/null 2>&1; then
+    pkill -x polybar 2>/dev/null || true
+    sleep 0.5
+    nohup "$HOME/.config/scripts/launch_polybar.sh" >/dev/null 2>&1 & disown
+fi
+
+# aviso visual
+if ! $BOOT && command -v dunstify >/dev/null 2>&1; then
+    dunstify -u low -a theme "theme aplicado" "${WALL##*/}" 2>/dev/null || true
+fi
+
+echo "tema: ${WALL}"
+exit 0

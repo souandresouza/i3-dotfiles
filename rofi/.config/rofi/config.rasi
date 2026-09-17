@@ -1,0 +1,6 @@
+configuration {
+  font: "JetBrainsMono Nerd Font 11";
+  case-sensitive: false;
+  show-icons: true;
+  icon-theme: "Papirus";
+}

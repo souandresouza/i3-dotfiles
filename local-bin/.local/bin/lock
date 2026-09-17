@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# Trava a tela com i3lock usando o wallpaper atual desfocado.
+# Monta um composite por monitor (crop do blur em cada tela).
+set -euo pipefail
+
+CACHE="$HOME/.cache/wal"
+WALL="$(cat "$CACHE/wal" 2>/dev/null || true)"
+DIR="$(mktemp -d)"
+TMP="$DIR/lock-final.png"
+
+cleanup() { rm -rf "$DIR"; }
+trap cleanup EXIT
+
+do_lock() {
+    if [[ -f "$1" ]]; then
+        i3lock -n -i "$1" 2>/dev/null || i3lock -n
+    else
+        i3lock -n -c "#000000"
+    fi
+}
+
+# Fallback: tela única
+simple_lock() {
+    GEOM="$(xdotool getdisplaygeometry 2>/dev/null || echo "1920 1080")"
+    if [[ -n "$WALL" && -f "$WALL" ]]; then
+        convert "$WALL" -resize "${GEOM% *}x${GEOM#* }^" -gravity center -extent \
+            "${GEOM% *}x${GEOM#* }" -blur 0x10 -modulate 95,100 "$TMP" 2>/dev/null || true
+    fi
+    do_lock "$TMP"
+}
+
+if [[ -z "$WALL" || ! -f "$WALL" ]]; then
+    i3lock -n -c "#000000"
+    exit 0
+fi
+
+mapfile -t geoms < <(xrandr --current 2>/dev/null | grep -E " connected" | \
+    grep -oE "[0-9]+x[0-9]+\+[0-9]+\+[0-9]+" || true)
+
+# xrandr indisponível ou nenhuma geometria → lock simples
+[[ ${#geoms[@]} -eq 0 ]] && { simple_lock; exit 0; }
+
+specs=()
+TOTW=0; TOTH=0
+for g in "${geoms[@]}"; do
+    w="${g%%x*}"; rest="${g#*x}"
+    h="${rest%%+*}"; rest="${rest#*+}"
+    x="${rest%%+*}"; y="${rest#*+}"
+    specs+=("$w $h $x $y")
+    (( TOTW < x + w )) && TOTW=$((x + w))
+    (( TOTH < y + h )) && TOTH=$((y + h))
+done
+
+# Crop + blur por monitor
+img_args=()
+for spec in "${specs[@]}"; do
+    read -r w h x y <<< "$spec"
+    crop="$DIR/lock-${x}-${y}.png"
+    if ! convert "$WALL" -resize "${w}x${h}^" -gravity center \
+        -crop "${w}x${h}+0+0" +repage \
+        -blur 0x10 -modulate 95,100 "$crop" 2>/dev/null; then
+        simple_lock
+        exit 0
+    fi
+    img_args+=("$crop" "-geometry" "+${x}+${y}" "-composite")
+done
+
+# Composite final no canvas do desktop completo
+convert -size "${TOTW}x${TOTH}" xc:black "$TMP" 2>/dev/null \
+    || { simple_lock; exit 0; }
+convert "$TMP" "${img_args[@]}" "$TMP" 2>/dev/null \
+    || { simple_lock; exit 0; }
+
+do_lock "$TMP"
+exit 0

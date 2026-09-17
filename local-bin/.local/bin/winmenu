@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Alternador de janelas via dmenu (xdotool).
+set -euo pipefail
+
+mywid=$(xdotool getactivewindow 2>/dev/null || true)
+wins=() labels=()
+
+while IFS= read -r wid; do
+    [ "$wid" = "$mywid" ] && continue
+    name=$(xdotool getwindowname "$wid" 2>/dev/null) || continue
+    class=$(xdotool getwindowclassname "$wid" 2>/dev/null) || class=""
+    case "$class" in dmenu|Dmenu) continue ;; esac
+    [[ -n "$name" ]] || continue
+    wins+=("$wid")
+    labels+=("$name")
+done < <(xdotool search --onlyvisible --name "" 2>/dev/null || true)
+
+[ ${#wins[@]} -eq 0 ] && exit 0
+
+chosen=$(printf '%s\n' "${labels[@]}" | rofi -dmenu -i -l 15 -p "Janelas") || exit 0
+for i in "${!labels[@]}"; do
+    [ "${labels[$i]}" = "$chosen" ] && xdotool windowactivate --sync "${wins[$i]}" 2>/dev/null && break
+done

@@ -1,0 +1,239 @@
+# i3 config file (v4)
+#
+# Para mais informações sobre este arquivo, veja:
+# https://i3wm.org/docs/userguide.html
+#theme
+include ~/.config/i3/i3.conf
+
+# Configuração de posicionamento das telas
+exec --no-startup-id xrandr --output eDP --primary --mode 1366x768 --pos 0x0 --output HDMI-A-0 --mode 1920x1080 --pos 1366x0
+
+# Definir variáveis para facilitar a leitura
+set $laptop eDP
+set $external HDMI-A-0
+
+# Forçar workspaces de 1 a 5 na tela do notebook
+workspace 1 output $laptop
+workspace 2 output $laptop
+workspace 3 output $laptop
+workspace 4 output $laptop
+workspace 5 output $laptop
+
+# Forçar workspaces de 6 a 10 no monitor HDMI
+workspace 6 output $external
+workspace 7 output $external
+workspace 8 output $external
+workspace 9 output $external
+workspace 10 output $external
+
+# Define a tecla modificadora (Super/Win)
+set $mod Mod4
+
+# --- Fontes ---
+# Você já tem a JetBrainsMono Nerd Font, ótima escolha.
+font pango:JetBrainsMono Nerd Font 10
+
+# --- Arrastar janelas flutuantes com $mod e tilingdrag no titulo ---
+floating_modifier $mod
+tiling_drag modifier titlebar
+
+# --- Atalhos Principais ---
+# Abrir terminal (Kitty)
+bindsym $mod+Return exec kitty
+
+# Abrir launcher (rofi drun)
+bindsym $mod+d exec rofi -show drun
+
+# Comandos do WM
+bindsym $mod+Tab exec wmmenu
+
+# Calculadora e emoji
+bindsym $mod+c exec calcmenu
+bindsym $mod+u exec emojimenu
+bindsym $mod+Shift+f exec thunar
+bindsym $mod+b exec firefox
+bindsym $mod+Shift+t exec Telegram
+bindsym $mod+Shift+y exec kitty -e yazi
+bindsym $mod+Shift+o exec kitty -e btop
+
+# Alternar janelas (rofi window)
+bindsym Mod1+Tab exec rofi -show window
+
+# Matar janela focada
+bindsym $mod+q kill
+
+# extrair frames
+bindsym $mod+j exec --no-startup-id ~/.config/scripts/extract_video_frames.sh
+
+#converter Imagens
+bindsym $mod+i exec --no-startup-id ~/.config/scripts/convert_images.sh
+
+# Gravar tela
+bindsym $mod+r exec --no-startup-id ~/.config/scripts/record_toggle.sh
+
+# Reiniciar i3 (útil para testar a config)
+bindsym $mod+Shift+r restart
+
+# Recarregar config
+bindsym $mod+Shift+c reload
+
+# Sair do i3
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Você deseja sair do i3?' -B 'Sim' 'i3-msg exit'"
+
+# --- Navegação entre Janelas (Setas) ---
+# Foco
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Mover janelas
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# Resize (com Ctrl, o mouse/teclas padrão ficam livres)
+bindsym $mod+Ctrl+Left resize grow width 10 px or 10 ppt
+bindsym $mod+Ctrl+Down resize shrink height 10 px or 10 ppt
+bindsym $mod+Ctrl+Up resize grow height 10 px or 10 ppt
+bindsym $mod+Ctrl+Right resize shrink width 10 px or 10 ppt
+
+# Foco em containers pai/filho
+bindsym $mod+a focus parent
+bindsym $mod+Ctrl+c focus child
+
+# --- Layouts e Splits ---
+# Alternar entre split horizontal/vertical
+bindsym $mod+v split vertical
+bindsym $mod+h split horizontal
+
+# Layouts
+bindsym $mod+w layout tabbed
+bindsym $mod+s layout stacking
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen toggle
+
+# Alternar entre tiling e floating
+bindsym $mod+Shift+space floating toggle
+
+# Força a abrir sempre na Workspace
+assign [class="Thunar"] → 1
+assign [class="kitty"] → 2
+assign [class="firefox"] → 6
+assign [class="^TelegramDesktop$"] → 7
+assign [class="mpv"] → 8
+
+# --- Workspaces ---
+# Alternar para workspace 1-10 (com --release, melhor usando o mod)
+bindsym --release $mod+1 workspace number 1
+bindsym --release $mod+2 workspace number 2
+bindsym --release $mod+3 workspace number 3
+bindsym --release $mod+4 workspace number 4
+bindsym --release $mod+5 workspace number 5
+bindsym --release $mod+6 workspace number 6
+bindsym --release $mod+7 workspace number 7
+bindsym --release $mod+8 workspace number 8
+bindsym --release $mod+9 workspace number 9
+bindsym --release $mod+0 workspace number 10
+
+# Mover janela focada para outro workspace
+bindsym --release $mod+Shift+1 move container to workspace number 1
+bindsym --release $mod+Shift+2 move container to workspace number 2
+bindsym --release $mod+Shift+3 move container to workspace number 3
+bindsym --release $mod+Shift+4 move container to workspace number 4
+bindsym --release $mod+Shift+5 move container to workspace number 5
+bindsym --release $mod+Shift+6 move container to workspace number 6
+bindsym --release $mod+Shift+7 move container to workspace number 7
+bindsym --release $mod+Shift+8 move container to workspace number 8
+bindsym --release $mod+Shift+9 move container to workspace number 9
+bindsym --release $mod+Shift+0 move container to workspace number 10
+
+# Mover e acompanhar a janela
+bindsym --release $mod+Ctrl+1 move container to workspace number 1; workspace number 1
+bindsym --release $mod+Ctrl+2 move container to workspace number 2; workspace number 2
+bindsym --release $mod+Ctrl+3 move container to workspace number 3; workspace number 3
+bindsym --release $mod+Ctrl+4 move container to workspace number 4; workspace number 4
+bindsym --release $mod+Ctrl+5 move container to workspace number 5; workspace number 5
+bindsym --release $mod+Ctrl+6 move container to workspace number 6; workspace number 6
+bindsym --release $mod+Ctrl+7 move container to workspace number 7; workspace number 7
+bindsym --release $mod+Ctrl+8 move container to workspace number 8; workspace number 8
+bindsym --release $mod+Ctrl+9 move container to workspace number 9; workspace number 9
+bindsym --release $mod+Ctrl+0 move container to workspace number 10; workspace number 10
+
+# Workspace anterior
+bindsym --release $mod+grave workspace prev
+
+# --- Scratchpad ---
+bindsym $mod+minus move scratchpad
+bindsym $mod+Shift+minus scratchpad show
+for_window [title="^scratchpad$"] floating enable, resize set 800 500, move position center
+for_window [title="^scratchpad$"] move scratchpad
+
+# --- Mídia e Sistema ---
+# Controle de volume
+bindsym XF86AudioRaiseVolume exec --no-startup-id pamixer -i 5
+bindsym XF86AudioLowerVolume exec --no-startup-id pamixer -d 5
+bindsym XF86AudioMute exec --no-startup-id pamixer -t
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+
+# Controle de brilho
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
+# Screenshots (usando maim/slop)
+bindsym Print exec --no-startup-id maim ~/Imagens/screenshot-$(date +%d%m%Y-%H%M%S).png
+bindsym $mod+Print exec --no-startup-id maim -s ~/Imagens/screenshot-area-$(date +%d%m%Y-%H%M%S).png
+
+# Captura de tela para leitura/OCR
+bindsym $mod+p exec --no-startup-id ~/.config/scripts/capture_screen.sh
+bindsym $mod+Shift+p exec --no-startup-id ~/.config/scripts/capture_screen.sh region
+
+# Wallpaper aleatório (visa o pywal para o tema de cores)
+bindsym $mod+Shift+w exec --no-startup-id ~/.config/scripts/random_wallpaper.sh
+
+# Bluetooth
+bindsym --release $mod+Shift+b exec --no-startup-id ~/.config/scripts/bt-toggle.sh
+
+# Touchpad on/off
+bindsym F12 exec --no-startup-id ~/.config/scripts/touchpad_toggle.sh
+
+# Gaps on/off
+bindsym $mod+Shift+g exec --no-startup-id ~/.config/scripts/gap_toggle.sh
+
+# Lock
+bindsym $mod+Shift+x exec --no-startup-id ~/.config/scripts/lock.sh
+
+# --- Autostart ---
+# Picom, Dunst, Wallpaper e Barra são iniciados aqui (funciona via XDM ou startx).
+exec --no-startup-id picom --config ~/.config/picom/picom.conf
+exec --no-startup-id killall dunst; dunst
+exec --no-startup-id xsettingsd --config ~/.config/xsettingsd/xsettingsd.conf
+exec --no-startup-id ~/.config/scripts/random_wallpaper.sh
+exec --no-startup-id setxkbmap -model abnt2 -layout br
+# Opcional: caps como Escape (desativado)
+# exec --no-startup-id setxkbmap -model abnt2 -layout br -option caps:escape
+exec --no-startup-id numlockx on
+exec_always --no-startup-id ~/.config/scripts/launch_polybar.sh
+exec_always --no-startup-id autotiling
+exec --no-startup-id sh -c "sleep 0.75 && ~/.config/scripts/lock.sh"
+
+# Auto-lock após 5 min ocioso (xautolock)
+exec --no-startup-id xautolock -time 5 -locker "$HOME/.config/scripts/lock.sh"
+
+# Monitor de bateria (alerta a 15% + histórico em ~/battery/)
+exec --no-startup-id sh -c "mkdir -p $HOME/battery; $HOME/.config/scripts/battery_tracker.sh"
+
+# i3-swallow (binário: swallow)
+exec_always --no-startup-id swallow
+
+# --- Janelas Flutuantes (Regras) ---
+# Exemplo: fazer o pavucontrol abrir flutuante
+for_window [class="Pavucontrol"] floating enable
+for_window [class="Galculator"] floating enable
+for_window [class="Rofi"] floating enable
+
+# Janelas flutuantes centralizadas (antes do scratchpad p/ não sobrescrever)
+for_window [floating] move position center

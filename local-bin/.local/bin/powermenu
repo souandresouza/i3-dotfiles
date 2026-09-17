@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Menu de energia via dmenu (wallpaper colors).
+set -euo pipefail
+
+ENTRIES=$'󰐥 Reiniciar\n󰐦 Desligar\n󰁯 Suspender\n󰌾 Bloquear\n󰗽 Sair\n󰈆 Cancelar'
+
+chosen="$(printf '%b\n' "$ENTRIES" | dmenu-wal -p "  Energi:")" || exit 0
+
+case "$chosen" in
+    *Reiniciar) systemctl reboot ;;
+    *Desligar)  systemctl poweroff ;;
+    *Suspender) systemctl suspend ;;
+    *Bloquear)  command -v lock >/dev/null 2>&1 && lock ;;
+    *Sair)      i3-msg exit ;;
+esac

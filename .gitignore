@@ -1,0 +1,20 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Caches e mídia local
+.cache/
+wallpapers/
+Imagens/
+Screenshots/
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+
+# Logs locais
+*.log
+battery/
