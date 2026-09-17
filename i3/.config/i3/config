@@ -52,6 +52,7 @@ bindsym $mod+c exec calcmenu
 bindsym $mod+u exec emojimenu
 bindsym $mod+Shift+f exec thunar
 bindsym $mod+b exec firefox
+bindsym $mod+h exec helium-browser
 bindsym $mod+Shift+t exec Telegram
 bindsym $mod+Shift+y exec kitty -e yazi
 bindsym $mod+Shift+o exec kitty -e btop
@@ -105,8 +106,8 @@ bindsym $mod+Ctrl+c focus child
 
 # --- Layouts e Splits ---
 # Alternar entre split horizontal/vertical
-bindsym $mod+v split vertical
-bindsym $mod+h split horizontal
+bindsym $mod+Shift+v split vertical
+bindsym $mod+Shift+h split horizontal
 
 # Layouts
 bindsym $mod+w layout tabbed
@@ -121,6 +122,7 @@ bindsym $mod+Shift+space floating toggle
 assign [class="Thunar"] → 1
 assign [class="kitty"] → 2
 assign [class="firefox"] → 6
+assign [class="Helium"] → 6
 assign [class="^TelegramDesktop$"] → 7
 assign [class="mpv"] → 8
 
@@ -218,7 +220,6 @@ exec --no-startup-id setxkbmap -model abnt2 -layout br
 exec --no-startup-id numlockx on
 exec_always --no-startup-id ~/.config/scripts/launch_polybar.sh
 exec_always --no-startup-id autotiling
-exec --no-startup-id sh -c "sleep 0.75 && ~/.config/scripts/lock.sh"
 
 # Auto-lock após 5 min ocioso (xautolock)
 exec --no-startup-id xautolock -time 5 -locker "$HOME/.config/scripts/lock.sh"
