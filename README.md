@@ -5,7 +5,8 @@ Configuração do meu **i3wm** (Arch Linux), inspirada em
 adaptada ao que já estava instalado aqui.
 
 - **WM**: i3 (gaps + bordas 0 via `i3.conf`)
-- **Barra**: polybar (topo com workspaces/sistema, inferior com progresso da música)
+- **Barra**: polybar — tema **material** de [adi1090x/polybar-themes](https://github.com/adi1090x/polybar-themes)
+  (topo com launcher/workspaces/sistema, inferior com progresso da música)
 - **Launcher/menus**: rofi (drun, janelas, emoji, calculadora, WiFi)
 - **Terminal**: kitty · **Gerenciador de arquivos**: Thunar · **Editor**: nvim/yazi
 - **Compositor**: picom · **Notificações**: dunst · **Lock**: i3lock (blur do wallpaper)
@@ -17,7 +18,7 @@ Layout pronto para [GNU Stow](https://www.gnu.org/software/stow/):
 ```
 i3/          ~/.config/i3          (config + i3.conf)
 i3lock/      ~/.config/i3lock
-polybar/     ~/.config/polybar
+polybar/     ~/.config/polybar    (config.ini + tema material/ do adi1090x)
 rofi/        ~/.config/rofi
 picom/       ~/.config/picom
 dunst/       ~/.config/dunst
@@ -25,6 +26,11 @@ xsettingsd/  ~/.config/xsettingsd
 scripts/     ~/.config/scripts    (scripts usados pelo i3/polybar)
 local-bin/   ~/.local/bin         (menus: launcher, wmmenu, powermenu, lock...)
 ```
+
+> O `polybar/.config/polybar/` contém o tema **material** (do
+> [adi1090x/polybar-themes](https://github.com/adi1090x/polybar-themes)) na pasta
+> `material/`, reutilizado por `config.ini`. O `material/config.ini` também pode
+> ser lançado standalone com `bash ~/.config/polybar/material/launch.sh`.
 
 ## Instalação
 
@@ -52,6 +58,8 @@ stow -d ~/i3-dotfiles -t ~ i3 i3lock polybar rofi picom dunst xsettingsd scripts
 - playerctl, pamixer, brightnessctl, maim, slop, xdotool
 - autotiling, i3-swallow-git (binário `swallow`), xautolock
 - JetBrainsMono Nerd Font, pywal (`wal`/`ruwall`)
+- Fantasque Sans Mono e **Material Design Iconic Font** (ícones do tema material;
+  a MDI fica em `~/.local/share/fonts/material_design_iconic_font.ttf`)
 
 ## Atalhos principais
 

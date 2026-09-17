@@ -20,8 +20,7 @@ disabled = #6c7086
 EOF
 fi
 
-# Só i3wm: módulo de workspaces sempre i3
-export WM_MODULE=i3
+# Só i3wm: módulo de workspaces sempre i3 (definido no config.ini)
 
 # Lança as barras (topo e inferior) por monitor (nomes detectados automaticamente)
 for m in $(polybar --list-monitors | cut -d: -f1); do
